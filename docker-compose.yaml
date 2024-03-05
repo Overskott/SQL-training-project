@@ -1,0 +1,40 @@
+version: '3.8'
+
+services: # Services are the environments and applicatinos that are run in a container
+  postgres: # Name of the service 
+    image: postgres:latest # Image to start container from
+    container_name: postgres_container 
+    restart: always # Restarts the container i case of a runtime crash
+
+    environment: # Same as -e option when running docker from terminal
+      POSTGRES_DB: postgres_container
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata # locationon the container where we will store the database (?)
+    
+    ports:
+      - "5432:5432"
+
+    volumes: # Same as -v in terminal options
+      -
+        # We bind the db directory in our project file to where PostgreSQL stores its data 
+        # to keep data stored persistent when PostgreSQL restarts
+        type: bind
+        source: ./db
+        target: /var/lib/postgresql/data
+      -
+        # We bind our source data file so that the PostgreSQL container can access files and
+        # scripts without having to copy them into the container
+        type: bind
+        source: ./source_data
+        target: /var/lib/postgresql/source_data
+      - 
+        type: bind
+        source: ./scripts
+        target: /var/lib/postgresql/scripts
+
+    networks: # Adds the network "reference" to the postgres service
+      - reference
+
+networks: # Creates the container network "reference"
+  reference: # name of the virtual network
