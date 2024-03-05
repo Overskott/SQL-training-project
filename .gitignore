@@ -1,0 +1,2 @@
+/db/pgdata # Not inculde folder where processed data are stored locally
+./vscode
